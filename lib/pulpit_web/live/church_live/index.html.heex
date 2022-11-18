@@ -1,0 +1,40 @@
+<.header>
+  Listing Churches
+  <:actions>
+    <.link patch={~p"/churches/new"}>
+      <.button>New Church</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="churches" rows={@churches} row_click={&JS.navigate(~p"/churches/#{&1}")}>
+  <:col :let={church} label="Name"><%= church.name %></:col>
+  <:action :let={church}>
+    <div class="sr-only">
+      <.link navigate={~p"/churches/#{church}"}>Show</.link>
+    </div>
+    <.link patch={~p"/churches/#{church}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={church}>
+    <.link phx-click={JS.push("delete", value: %{id: church.id})} data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="church-modal"
+  show
+  on_cancel={JS.navigate(~p"/churches")}
+>
+  <.live_component
+    module={PulpitWeb.ChurchLive.FormComponent}
+    id={@church.id || :new}
+    title={@page_title}
+    action={@live_action}
+    church={@church}
+    current_user={@current_user}
+    navigate={~p"/churches"}
+  />
+</.modal>

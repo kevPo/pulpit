@@ -1,0 +1,41 @@
+<.header>
+  Listing Sermons
+  <:actions>
+    <.link patch={~p"/sermons/new"}>
+      <.button>New Sermon</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="sermons" rows={@sermons} row_click={&JS.navigate(~p"/sermons/#{&1}")}>
+  <:col :let={sermon} label="Title"><%= sermon.title %></:col>
+  <:col :let={sermon} label="References"><%= sermon.references %></:col>
+  <:col :let={sermon} label="Written at"><%= sermon.written_at %></:col>
+  <:action :let={sermon}>
+    <div class="sr-only">
+      <.link navigate={~p"/sermons/#{sermon}"}>Show</.link>
+    </div>
+    <.link patch={~p"/sermons/#{sermon}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={sermon}>
+    <.link phx-click={JS.push("delete", value: %{id: sermon.id})} data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="sermon-modal"
+  show
+  on_cancel={JS.navigate(~p"/sermons")}
+>
+  <.live_component
+    module={PulpitWeb.SermonLive.FormComponent}
+    id={@sermon.id || :new}
+    title={@page_title}
+    action={@live_action}
+    sermon={@sermon}
+    navigate={~p"/sermons"}
+  />
+</.modal>
