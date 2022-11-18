@@ -1,5 +1,5 @@
 <.header>
-  Sermon <%= @sermon.id %>
+  <%= @sermon.title %>
   <:subtitle>This is a sermon record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/sermons/#{@sermon}/show/edit"} phx-click={JS.push_focus()}>
@@ -16,7 +16,12 @@
 
 <.back navigate={~p"/sermons"}>Back to sermons</.back>
 
-<.modal :if={@live_action == :edit} id="sermon-modal" show on_cancel={JS.patch(~p"/sermons/#{@sermon}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="sermon-modal"
+  show
+  on_cancel={JS.patch(~p"/sermons/#{@sermon}")}
+>
   <.live_component
     module={PulpitWeb.SermonLive.FormComponent}
     id={@sermon.id}

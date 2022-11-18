@@ -6,6 +6,7 @@ defmodule Pulpit.Resources do
   import Ecto.Query, warn: false
   alias Pulpit.Repo
 
+  alias Pulpit.Accounts
   alias Pulpit.Resources.Sermon
 
   @doc """
@@ -49,9 +50,10 @@ defmodule Pulpit.Resources do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_sermon(attrs \\ %{}) do
+  def create_sermon(%Accounts.User{} = user, attrs \\ %{}) do
     %Sermon{}
     |> Sermon.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
@@ -100,5 +102,21 @@ defmodule Pulpit.Resources do
   """
   def change_sermon(%Sermon{} = sermon, attrs \\ %{}) do
     Sermon.changeset(sermon, attrs)
+  end
+
+  def list_user_sermons(%Accounts.User{} = user) do
+    Sermon
+    |> user_sermons_query(user)
+    |> Repo.all()
+  end
+
+  def get_user_sermon!(%Accounts.User{} = user, id) do
+    Sermon
+    |> user_sermons_query(user)
+    |> Repo.get!(id)
+  end
+
+  defp user_sermons_query(query, %Accounts.User{id: user_id}) do
+    from(v in query, where: v.user_id == ^user_id)
   end
 end

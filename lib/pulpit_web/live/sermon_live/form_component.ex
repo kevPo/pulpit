@@ -20,9 +20,9 @@ defmodule PulpitWeb.SermonLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={{f, :title}} type="text" label="title" />
-        <.input field={{f, :references}} type="text" label="references" />
-        <.input field={{f, :written_at}} type="datetime-local" label="written_at" />
+        <.input field={{f, :title}} type="text" label="Title" />
+        <.input field={{f, :references}} type="textarea" label="References" />
+        <.input field={{f, :written_at}} type="datetime-local" label="Date written" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Sermon</.button>
         </:actions>
@@ -69,7 +69,9 @@ defmodule PulpitWeb.SermonLive.FormComponent do
   end
 
   defp save_sermon(socket, :new, sermon_params) do
-    case Resources.create_sermon(sermon_params) do
+    user = socket.assigns.current_user
+
+    case Resources.create_sermon(user, sermon_params) do
       {:ok, _sermon} ->
         {:noreply,
          socket
